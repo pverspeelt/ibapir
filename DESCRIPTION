@@ -1,13 +1,12 @@
 Package: ibapir
-Title: What the Package Does (One Line, Title Case)
+Title: An R interface to Interactive Brokers
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Philippe",
+           family = "Verspeelt",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+           email = "phiver4@gmail.com")
+Description: Provides a native R access to Interactive Brokers via the Interactive Brokers API.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
