@@ -14,3 +14,4 @@ Suggests:
     testthat
 Imports: 
     glue
+RoxygenNote: 6.1.1
