@@ -25,18 +25,19 @@ reqManagedAccts <- function(ib_con) {
   send_message(out_msg, ib_con)
 
   while (TRUE) {
-    socketSelect(list(ib_con$con), FALSE, 0.1)
+    if (socketSelect(list(ib_con$con), FALSE, 0.1)) {
 
-    in_msg <- parse_incoming_message(ib_con$con)
-    msgId <- in_msg[1]
+      in_msg <- parse_incoming_message(ib_con$con)
+      msgId <- in_msg[1]
 
-    if (msgId == .incoming_msg_id$MANAGED_ACCTS) {
-      managed_accounts <- ProcessMsg(in_msg, ib_con)
-    } else
-      if (msgId == .incoming_msg_id$ERR_MSG) {
-        ProcessMsg(in_msg, ib_con)
+      if (msgId == .incoming_msg_id$MANAGED_ACCTS) {
+        managed_accounts <- ProcessMsg(in_msg, ib_con)
       } else
-        break
+        if (msgId == .incoming_msg_id$ERR_MSG) {
+          ProcessMsg(in_msg, ib_con)
+        }
+    } else
+      break
   }
 
   if (length(managed_accounts) > 1) {

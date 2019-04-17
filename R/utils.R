@@ -1,3 +1,5 @@
+#' @importFrom glue glue
+#'
 #' @keywords internal
 make_field <- function(x) {
   if (is.logical(x)) {
