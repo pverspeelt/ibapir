@@ -16,7 +16,7 @@
 reqIds <- function(ib_con) {
 
   if (!is_ib_connection(ib_con)) {
-    stop("not a 'tws' connection", call. = FALSE)
+    stop("not a valid ib connection", call. = FALSE)
   }
 
   VERSION <- "1"

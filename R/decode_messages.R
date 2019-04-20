@@ -17,6 +17,7 @@ ProcessMsg <- function(in_msg, ib_con) {
          ERR_MSG = processErrMsg(in_msg, ib_con, msg_counter),
          MANAGED_ACCTS = processManagedAcctsMsg(in_msg, msg_counter),
          NEXT_VALID_ID = processNextValidIdMsg(in_msg, msg_counter),
+         CURRENT_TIME = processCurrentTimeMsg(in_msg, msg_counter),
          warning(glue("Unknown incoming message Id: {msgId}
                       with message: {paste0(in_msg, collapse = \" \")}."), call.=FALSE)
          )
