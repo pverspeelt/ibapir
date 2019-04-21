@@ -13,11 +13,15 @@ ProcessMsg <- function(in_msg, ib_con) {
   msg_counter <- counter()
   msgId <- as.integer(in_msg[msg_counter()])
 
+  # Switch between function calls. Order in function calls should always be
+  # in_msg, msg_counter, ib_con
   switch(names(which(.incoming_msg_id == msgId)),
-         ERR_MSG = processErrMsg(in_msg, ib_con, msg_counter),
+         ERR_MSG = processErrMsg(in_msg, msg_counter, ib_con),
          MANAGED_ACCTS = processManagedAcctsMsg(in_msg, msg_counter),
          NEXT_VALID_ID = processNextValidIdMsg(in_msg, msg_counter),
          CURRENT_TIME = processCurrentTimeMsg(in_msg, msg_counter),
+         CONTRACT_DATA = processContractDataMsg(in_msg, msg_counter, ib_con),
+         CONTRACT_DATA_END = processContractDataEndMsg(in_msg, msg_counter, ib_con),
          warning(glue("Unknown incoming message Id: {msgId}
                       with message: {paste0(in_msg, collapse = \" \")}."), call.=FALSE)
          )
@@ -26,7 +30,7 @@ ProcessMsg <- function(in_msg, ib_con) {
 
 
 #' @keywords internal
-processErrMsg <- function(msg, ib_con, msg_counter) {
+processErrMsg <- function(msg, msg_counter, ib_con) {
   version <- as.integer(msg[msg_counter()])
   id <- as.integer(msg[msg_counter()])
   error_code <- as.integer(msg[msg_counter()])
