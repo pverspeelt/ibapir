@@ -22,6 +22,7 @@ ProcessMsg <- function(in_msg, ib_con) {
          CURRENT_TIME = processCurrentTimeMsg(in_msg, msg_counter),
          CONTRACT_DATA = processContractDataMsg(in_msg, msg_counter, ib_con),
          CONTRACT_DATA_END = processContractDataEndMsg(in_msg, msg_counter, ib_con),
+         SYMBOL_SAMPLES = processSymbolSamplesMsg(in_msg, msg_counter),
          warning(glue("Unknown incoming message Id: {msgId}
                       with message: {paste0(in_msg, collapse = \" \")}."), call.=FALSE)
          )

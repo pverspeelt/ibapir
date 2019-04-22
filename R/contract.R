@@ -174,7 +174,7 @@ Contract <- function(conId = 0L,
 #'
 #' @examples
 #' Example to come
-ContractDetails <- function(contract = contract(),
+ContractDetails <- function(contract = Contract(),
                             marketName = "",
                             minTick = 0,
                             orderTypes = "",
@@ -216,7 +216,7 @@ ContractDetails <- function(contract = contract(),
                             nextOptionPartial = FALSE,
                             notes = "") {
   structure(list(
-    contract = contract,
+    Contract = contract,
     marketName = marketName,
     minTick = minTick,
     orderTypes = orderTypes,
@@ -261,3 +261,13 @@ ContractDetails <- function(contract = contract(),
   class = "ContractDetails")
 }
 
+#' @keywords internal
+ContractDescription <- function(contract = Contract(),
+                                derivativeSecTypes = "") {
+
+  structure(list(
+    contract = contract,
+    derivativeSecTypes = derivativeSecTypes
+  ),
+  class = "ContractDescription")
+}

@@ -4,7 +4,7 @@
 \alias{ContractDetails}
 \title{Object for storing the contract details}
 \usage{
-ContractDetails(contract = contract(), marketName = "", minTick = 0,
+ContractDetails(contract = Contract(), marketName = "", minTick = 0,
   orderTypes = "", validExchanges = "", priceMagnifier = 0,
   underConId = 0, longName = "", contractMonth = "", industry = "",
   category = "", subcategory = "", timeZoneId = "",
