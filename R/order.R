@@ -241,6 +241,47 @@ Order = function(
 
 }
 
+#' @keywords internal
+OrderStatus <- function(orderId = 0L,
+                        status = '',
+                        filled = 0L,
+                        remaining = 0L,
+                        avgFillPrice = 0.0,
+                        permId = 0L,
+                        parentId = 0L,
+                        lastFillPrice = 0.0,
+                        clientId = 0L,
+                        whyHeld = '',
+                        mktCapPrice = 0.0
+                        #lastLiquidity = 0L
+                        ){
+  structure(
+    list(
+      orderId = orderId,
+      status = status,
+      filled = filled,
+      remaining = remaining,
+      avgFillPrice = avgFillPrice,
+      permId = permId,
+      parentId = parentId,
+      lastFillPrice = lastFillPrice,
+      clientId = clientId,
+      whyHeld = whyHeld,
+      mktCapPrice = mktCapPrice
+      # lastLiquidity = lastLiquidity
+    )
+  )
+
+}
+
+
+
+
 # TODO: print method for class Order
 # xx <- Order()
 # data.frame(unlist(xx), stringsAsFactors = FALSE)
+
+
+
+
+
