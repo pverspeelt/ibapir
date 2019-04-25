@@ -6,33 +6,48 @@ Order = function(
     permId   = 0,
 
     # main order fields
+    action = "",
     totalQuantity = 0,
+    orderType = "",
     lmtPrice  = numeric(length = 0),
     auxPrice  = numeric(length = 0),
 
     # extended order fields
-    activeStartTime = "",
-    activeStopTime = "",
-    ocaType    = 0,
-    transmit   = TRUE,
-    parentId   = 0,
-    blockOrder = FALSE,
+    tif = "",                # "Time in Force" - DAY, GTC, etc.
+    activeStartTime = "",   # for GTC orders
+    activeStopTime = "",    # for GTC orders
+    ocaGroup = "",          # one cancels all group name
+    ocaType        = 0,     # 1 = CANCEL_WITH_BLOCK, 2 = REDUCE_WITH_BLOCK, 3 = REDUCE_NON_BLOCK
+    orderRef       = "",
+    transmit       = TRUE,  # if false, order will be created but not transmited
+    parentId       = 0,     # Parent order Id, to associate Auto STP or TRAIL orders with the original order.
+    blockOrder     = FALSE,
     sweepToFill    = FALSE,
     displaySize    = 0,
-    triggerMethod  = 0,
-    outsideRth = FALSE,
-    hidden     = FALSE,
-    allOrNone  = FALSE,
-    minQty     = integer(length = 0),
-    percentOffset  = numeric(length = 0),
+    triggerMethod  = 0,    # 0=Default, 1=Double_Bid_Ask, 2=Last, 3=Double_Last, 4=Bid_Ask, 7=Last_or_Bid_Ask, 8=Mid-point
+    outsideRth     = FALSE,
+    hidden         = FALSE,
+    goodAfterTime       = "",   # Format: 20060505 08:00:00 {time zone}
+    goodTillDate        = "",  # Format: 20060505 08:00:00 {time zone}
+    rule80A             = "",   # Individual = 'I', Agency = 'A', AgentOtherMember = 'W', IndividualPTIA = 'J', AgencyPTIA = 'U', AgentOtherMemberPTIA = 'M', IndividualPT = 'K', AgencyPT = 'Y', AgentOtherMemberPT = 'N'
+    allOrNone      = FALSE,
+    minQty         = integer(length = 0),  #type: int
+    percentOffset  = numeric(length = 0), # type: float; REL orders only
     overridePercentageConstraints = FALSE,
-    trailStopPrice = numeric(length = 0),
-    trailingPercent = numeric(length = 0),
+    trailStopPrice = numeric(length = 0),  # type: float
+    trailingPercent = numeric(length = 0), # type: float; TRAILLIMIT orders only
+
+    # financial advisors only
+    faGroup              = "",
+    faProfile            = "",
+    faMethod             = "",
+    faPercentage         = "",
 
     # institutional (ie non-cleared) only
-    openClose = "O",
-    origin    = 0,
-    shortSaleSlot = 0,
+    designatedLocation = "", #used only when shortSaleSlot=2
+    openClose     = "O",    # O=Open, C=Close
+    origin        = 0,  # 0=Customer, 1=Firm
+    shortSaleSlot = 0,    # type: int; 1 if you hold the shares, 2 if they will be delivered from elsewhere.  Only for Action=SSHORT
     exemptCode    = -1,
 
     # SMART routing only
@@ -43,7 +58,7 @@ Order = function(
     optOutSmartRouting = FALSE,
 
     # BOX exchange orders only
-    auctionStrategy = 0,
+    auctionStrategy = 0, # 1=AUCTION_MATCH, 2=AUCTION_IMPROVEMENT, 3=AUCTION_TRANSPARENT
     startingPrice   = numeric(length = 0),
     stockRefPrice   = numeric(length = 0),
     delta       = numeric(length = 0),
@@ -88,6 +103,25 @@ Order = function(
     scaleRandomPercent = FALSE,
     scaleTable = "",
 
+    # HEDGE ORDERS
+    hedgeType             = "", # 'D' - delta, 'B' - beta, 'F' - FX, 'P' - pair
+    hedgeParam            = "", # 'beta=X' value for beta hedge, 'ratio=Y' for pair hedge
+
+    # Clearing info
+    account               = "", # IB account
+    settlingFirm          = "",
+    clearingAccount       = "",   #True beneficiary of the order
+    clearingIntent        = "", # "" (Default), "IB", "Away", "PTA" (PostTrade)
+
+    # ALGO ORDERS ONLY
+    algoStrategy          = "",
+
+    algoParams            = NULL,    #TagValueList
+    smartComboRoutingParams = NULL,  #TagValueList
+
+    algoId = "",
+
+
     # What-if
     whatIf = FALSE,
 
@@ -95,11 +129,34 @@ Order = function(
     notHeld = FALSE,
     solicited = FALSE,
 
+    # models
+    modelCode = "",
+
+    # order combo legs
+    orderComboLegs = NULL,  # OrderComboLegListSPtr
+
+    orderMiscOptions = NULL,  # TagValueList
+
+    # VER PEG2BENCH fields:
+    referenceContractId = 0,
+    peggedChangeAmount = 0.0,
+    isPeggedChangeAmountDecrease = FALSE,
+    referenceChangeAmount = 0.0,
+    referenceExchangeId = "",
+    adjustedOrderType = "",
+
     triggerPrice = numeric(length = 0),
     adjustedStopPrice = numeric(length = 0),
     adjustedStopLimitPrice = numeric(length = 0),
     adjustedTrailingAmount = numeric(length = 0),
+    adjustableTrailingUnit = 0,
     lmtPriceOffset = numeric(length = 0),
+
+    conditions = "",  # std::vector<std::shared_ptr<OrderCondition>>
+    conditionsCancelOrder = FALSE,
+    conditionsIgnoreRth = FALSE,
+
+    # ext operator
     extOperator = "",
 
     # native cash quantity
@@ -126,7 +183,9 @@ Order = function(
       permId   = permId,
 
       # main order fields
+      action = action,
       totalQuantity = totalQuantity,
+      orderType = orderType,
       lmtPrice  = lmtPrice,
       auxPrice  = auxPrice,
 
@@ -149,10 +208,17 @@ Order = function(
       trailStopPrice = trailStopPrice,
       trailingPercent = trailingPercent,
 
+      # financial advisors only
+      faGroup              = faGroup,
+      faProfile            = faProfile,
+      faMethod             = faMethod,
+      faPercentage         = faPercentage,
+
       # institutional (ie non-cleared) only
-      openClose = openClose,
-      origin    = origin,
-      shortSaleSlot = shortSaleSlot,
+      designatedLocation = designatedLocation, #used only when shortSaleSlot=2
+      openClose     = openClose,    # O=Open, C=Close
+      origin        = origin,  # 0=Customer, 1=Firm
+      shortSaleSlot = shortSaleSlot,    # type: int; 1 if you hold the shares, 2 if they will be delivered from elsewhere.  Only for Action=SSHORT
       exemptCode    = exemptCode,
 
       # SMART routing only
@@ -163,7 +229,7 @@ Order = function(
       optOutSmartRouting = optOutSmartRouting,
 
       # BOX exchange orders only
-      auctionStrategy = auctionStrategy,
+      auctionStrategy = auctionStrategy, # 1=AUCTION_MATCH, 2=AUCTION_IMPROVEMENT, 3=AUCTION_TRANSPARENT
       startingPrice   = startingPrice,
       stockRefPrice   = stockRefPrice,
       delta       = delta,
@@ -208,6 +274,25 @@ Order = function(
       scaleRandomPercent = scaleRandomPercent,
       scaleTable = scaleTable,
 
+      # HEDGE ORDERS
+      hedgeType             = hedgeType, # 'D' - delta, 'B' - beta, 'F' - FX, 'P' - pair
+      hedgeParam            = hedgeParam, # 'beta=X' value for beta hedge, 'ratio=Y' for pair hedge
+
+      # Clearing info
+      account               = account, # IB account
+      settlingFirm          = settlingFirm,
+      clearingAccount       = clearingAccount,   #True beneficiary of the order
+      clearingIntent        = clearingIntent, # "" (Default), "IB", "Away", "PTA" (PostTrade)
+
+      # ALGO ORDERS ONLY
+      algoStrategy          = algoStrategy,
+
+      algoParams            = algoParams,    #TagValueList
+      smartComboRoutingParams = smartComboRoutingParams,  #TagValueList
+
+      algoId = algoId,
+
+
       # What-if
       whatIf = whatIf,
 
@@ -215,11 +300,34 @@ Order = function(
       notHeld = notHeld,
       solicited = solicited,
 
+      # models
+      modelCode = modelCode,
+
+      # order combo legs
+      orderComboLegs = orderComboLegs,  # OrderComboLegListSPtr
+
+      orderMiscOptions = orderMiscOptions,  # TagValueList
+
+      # VER PEG2BENCH fields:
+      referenceContractId = referenceContractId,
+      peggedChangeAmount = peggedChangeAmount,
+      isPeggedChangeAmountDecrease = isPeggedChangeAmountDecrease,
+      referenceChangeAmount = referenceChangeAmount,
+      referenceExchangeId = referenceExchangeId,
+      adjustedOrderType = adjustedOrderType,
+
       triggerPrice = triggerPrice,
       adjustedStopPrice = adjustedStopPrice,
       adjustedStopLimitPrice = adjustedStopLimitPrice,
       adjustedTrailingAmount = adjustedTrailingAmount,
+      adjustableTrailingUnit = adjustableTrailingUnit,
       lmtPriceOffset = lmtPriceOffset,
+
+      conditions = conditions,  # std::vector<std::shared_ptr<OrderCondition>>
+      conditionsCancelOrder = conditionsCancelOrder,
+      conditionsIgnoreRth = conditionsIgnoreRth,
+
+      # ext operator
       extOperator = extOperator,
 
       # native cash quantity
