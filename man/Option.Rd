@@ -9,10 +9,25 @@ Option(symbol, lastTradeDateOrContractMonth = "", strike = 0,
   primaryExchange = "", currency = "USD")
 }
 \arguments{
-\item{currency}{}
+\item{symbol}{The contract (or its underlying) symbol.}
+
+\item{lastTradeDateOrContractMonth}{The contract's last trading day or
+contract month.}
+
+\item{strike}{The option's strike price.}
+
+\item{right}{Put or Call. Valid values are 'P', 'PUT', 'C', 'CALL'}
+
+\item{multiplier}{The instrument's multiplier. Default value is: 100}
+
+\item{exchange}{The destination exchange.}
+
+\item{primaryExchange}{The contract's primary exchange.}
+
+\item{currency}{The underlying's currency.}
 }
 \value{
-returns an object of class "contract"
+returns an object of class "Contract"
 }
 \description{
 Create an option contract

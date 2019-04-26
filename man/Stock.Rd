@@ -8,10 +8,16 @@ Stock(symbol, exchange = "SMART", primaryExchange = "",
   currency = "USD")
 }
 \arguments{
-\item{currency}{}
+\item{symbol}{The contract (or its underlying) symbol.}
+
+\item{exchange}{The destination exchange.}
+
+\item{primaryExchange}{The contract's primary exchange.}
+
+\item{currency}{The underlying's currency.}
 }
 \value{
-returns an object of class "contract"
+returns an object of class "Contract"
 }
 \description{
 Create a stock contract
