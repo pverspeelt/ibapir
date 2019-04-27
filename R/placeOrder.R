@@ -40,7 +40,7 @@ create_placeOrder_msg <- function(orderId, contract, order, ib_con) {
   }
 
   if (ib_con$server_version < .server_version$MIN_SERVER_VER_SOFT_DOLLAR_TIER &&
-      (nchar(order$softDollarTier.name) || nchar(order$softDollarTier.val))) {
+      (nchar(order$softDollarTier$name) != 0 || nchar(order$softDollarTier$val) != 0)) {
     stop(glue("Current server version {ib_con$server_version} does not support soft dollar tier."),
          call. = FALSE)
   }
@@ -385,8 +385,8 @@ create_placeOrder_msg <- function(orderId, contract, order, ib_con) {
 
   if (ib_con$server_version >= .server_version$MIN_SERVER_VER_SOFT_DOLLAR_TIER) {
     out_msg <- c(out_msg,
-                 make_field(order$softDollarTier.name),
-                 make_field(order$softDollarTier.val))
+                 make_field(order$softDollarTier$name),
+                 make_field(order$softDollarTier$val))
   }
 
   if (ib_con$server_version >= .server_version$MIN_SERVER_VER_CASH_QTY) {
@@ -427,6 +427,7 @@ create_placeOrder_msg <- function(orderId, contract, order, ib_con) {
   #                make_field(order$usePriceMgmtAlgo))
   # }
 
+  return(out_msg)
 }
 
 

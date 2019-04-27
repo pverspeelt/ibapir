@@ -1,5 +1,6 @@
 #' @keywords internal
 Order = function(
+    softDollarTier = SoftDollarTier("", "", ""),
     # order identifier
     orderId  = 0,
     clientId = 0,
@@ -178,6 +179,7 @@ Order = function(
 
   structure(
     list(
+      softDollarTier = softDollarTier,
       orderId  = orderId,
       clientId = clientId,
       permId   = permId,
@@ -382,14 +384,19 @@ OrderStatus <- function(orderId = 0L,
 
 }
 
-
-
+SoftDollarTier <- function(name = "",
+                           val = "",
+                           displayName = "") {
+  structure(
+    list(
+      name = name,
+      val = val,
+      displayName = displayName
+    )
+  )
+}
 
 # TODO: print method for class Order
 # xx <- Order()
 # data.frame(unlist(xx), stringsAsFactors = FALSE)
-
-
-
-
 
