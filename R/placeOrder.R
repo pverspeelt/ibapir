@@ -81,7 +81,7 @@ create_placeOrder_msg <- function(orderId, contract, order, ib_con) {
   out_msg <- .outgoing_msg_id$PLACE_ORDER
 
   # server version 145 and higher do not send the Version field anymore.
-  if (ib_con$server_Version < .server_version$MIN_SERVER_VER_ORDER_CONTAINER) {
+  if (ib_con$server_version < .server_version$MIN_SERVER_VER_ORDER_CONTAINER) {
     out_msg <- c(out_msg,
                  make_field(VERSION))
   }
@@ -329,12 +329,12 @@ create_placeOrder_msg <- function(orderId, contract, order, ib_con) {
   }
 
   out_msg <- c(out_msg,
-               make_field(order.algoId),
-               make_field(order.whatIf),
-               make_field(order.orderMiscOptions),
-               make_field(order.solicited),
-               make_field(order.randomizeSize),
-               make_field(order.randomizePrice)
+               make_field(order$algoId),
+               make_field(order$whatIf),
+               make_field(order$orderMiscOptions),
+               make_field(order$solicited),
+               make_field(order$randomizeSize),
+               make_field(order$randomizePrice)
                )
 
   if (ib_con$server_version >= .server_version$MIN_SERVER_VER_PEGGED_TO_BENCHMARK) {
@@ -342,11 +342,11 @@ create_placeOrder_msg <- function(orderId, contract, order, ib_con) {
 
     if (order$orderType == "PEG BENCH") {
     out_msg <- c(out_msg,
-                 make_field(order.referenceContractId),
-                 make_field(order.isPeggedChangeAmountDecrease),
-                 make_field(order.peggedChangeAmount),
-                 make_field(order.referenceChangeAmount),
-                 make_field(order.referenceExchangeId)
+                 make_field(order$referenceContractId),
+                 make_field(order$isPeggedChangeAmountDecrease),
+                 make_field(order$peggedChangeAmount),
+                 make_field(order$referenceChangeAmount),
+                 make_field(order$referenceExchangeId)
                  )
     }
 
