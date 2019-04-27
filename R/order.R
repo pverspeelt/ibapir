@@ -152,7 +152,7 @@ Order = function(
     adjustableTrailingUnit = 0,
     lmtPriceOffset = numeric(length = 0),
 
-    conditions = "",  # std::vector<std::shared_ptr<OrderCondition>>
+    conditions = NULL,  # std::vector<std::shared_ptr<OrderCondition>>
     conditionsCancelOrder = FALSE,
     conditionsIgnoreRth = FALSE,
 
