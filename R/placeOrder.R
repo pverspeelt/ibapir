@@ -431,6 +431,63 @@ create_placeOrder_msg <- function(orderId, contract, order, ib_con) {
 }
 
 
+processOrderStatusMsg <- function(in_msg, msg_counter, ib_con) {
+
+  if (ib_con$server_version < .server_version$MIN_SERVER_VER_MARKET_CAP_PRICE){
+   version <- as.integer(in_msg[msg_counter()])
+  }
+
+  orderId <- as.integer(in_msg[msg_counter()])
+  status <- in_msg[msg_counter()]
+
+  if (ib_con$server_version >= .server_version$MIN_SERVER_VER_FRACTIONAL_POSITIONS) {
+    filled <- as.numeric(in_msg[msg_counter])
+  } else {
+    filled <- as.integer(in_msg[msg_counter])
+  }
+
+  if (ib_con$server_version >= .server_version$MIN_SERVER_VER_FRACTIONAL_POSITIONS) {
+    remaining <- as.numeric(in_msg[msg_counter])
+  } else {
+    remaining <- as.integer(in_msg[msg_counter])
+  }
+
+  avgFillPrice <- as.numeric(in_msg[msg_counter])
+
+  permId <- as.integer(in_msg[msg_counter])
+  parentId <- as.integer(in_msg[msg_counter])
+  lastFillPrice <- as.numeric(in_msg[msg_counter])
+  clientId <- as.integer(in_msg[msg_counter])
+  whyHeld <- as.integer(in_msg[msg_counter])
+
+  if (ib_con$server_version >= .server_version$MIN_SERVER_VER_MARKET_CAP_PRICE) {
+    mktCapPrice <- as.numeric(in_msg[msg_counter])
+  } else {
+    mktCapPrice <- NULL
+  }
+
+  orderStatus(orderId, status, filled, remaining, avgFillPrice,
+              permId, parentId, lastFillPrice, clientId, whyHeld,
+              mktCapPric)
+}
 
 
+orderStatus <- function(orderId, status, filled, remaining, avgFillPrice,
+                        permId, parentId, lastFillPrice, clientId, whyHeld,
+                        mktCapPrice) {
+
+  data.frame(orderId = OrderId,
+             status = status,
+             filled= filled,
+             remaining = remaining,
+             avgFillPrice = avgFillPrice,
+             permId = permId,
+             parentId  = parentId,
+             lastFillPrice = lastFillPrice,
+             clientId = clientId,
+             whyHeld = whyHeld,
+             mktCapPrice = mktCapPrice,
+             stringsAsFactors = FALSE)
+
+}
 
