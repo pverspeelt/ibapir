@@ -396,6 +396,15 @@ SoftDollarTier <- function(name = "",
   )
 }
 
+OrderComboLeg <- function(price = NA_real_) { # UNSET_DOUBLE
+  structure(
+    list(
+      price = price
+    ),
+    class = "OrderComboLeg"
+  )
+}
+
 # TODO: print method for class Order
 # xx <- Order()
 # data.frame(unlist(xx), stringsAsFactors = FALSE)
