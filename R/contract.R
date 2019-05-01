@@ -271,3 +271,34 @@ ContractDescription <- function(contract = Contract(),
   ),
   class = "ContractDescription")
 }
+
+
+
+ComboLeg <- function(conId = 0L,  # type: int
+                     ratio = 0L,  # type: int
+                     action = "", # BUY/SELL/SSHORT
+                     exchange = "",
+                     openClose = 0L,   # type: int; LegOpenClose enum values
+                     # for stock legs when doing short sale
+                     shortSaleSlot = 0,
+                     designatedLocation = "",
+                     exemptCode = -1){
+
+  structure(
+    list(
+      conId = conId,  # type: int
+      ratio = ratio,  # type: int
+      action = action, # BUY/SELL/SSHORT
+      exchange = exchange,
+      openClose = openClose,   # type: int; LegOpenClose enum values
+      # for stock legs when doing short sale
+      shortSaleSlot = shortSaleSlot,
+      designatedLocation = designatedLocation,
+      exemptCode = exemptCode
+    ),
+    class = "ComboLeg"
+  )
+}
+
+
+
