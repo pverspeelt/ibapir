@@ -119,7 +119,7 @@ create_placeOrder_msg <- function(orderId, contract, order, ib_con) {
                make_field(order$lmtPrice),
                make_field(order$auxPrice),
 
-               # extended order fields
+               # extended order in_msg[msg_counter()]
                make_field(order$tif),
                make_field(order$ocaGroup),
                make_field(order$account),
@@ -156,7 +156,7 @@ create_placeOrder_msg <- function(orderId, contract, order, ib_con) {
                      make_field(comboLeg$openClose),
                      make_field(comboLeg$shortSaleSlot),
                      make_field(comboLeg$designatedLocation),
-                     make_field(comboLeg.exemptCode))
+                     make_field(comboLeg$exemptCode))
       }
 
       orderComboLegsCount <- ifelse(is.null(order$orderComboLegs),
@@ -490,4 +490,370 @@ orderStatus <- function(orderId, status, filled, remaining, avgFillPrice,
              stringsAsFactors = FALSE)
 
 }
+
+
+processOpenOrderMsg <- function(in_msg, msg_counter, ib_con) {
+
+  if (ib_con$server_version < .server_version$MIN_SERVER_VER_ORDER_CONTAINER) {
+    version <- as.integer(in_msg[msg_counter()])
+  } else {
+    version = ib_con$server_version
+  }
+
+  order <- Order()
+  order$orderId <- as.integer(in_msg[msg_counter()])
+
+  contract <- Contract()
+
+  # read contract in_msg[msg_counter()]
+  contract$conId <- as.integer(in_msg[msg_counter()])
+  contract$symbol <- in_msg[msg_counter()]
+  contract$secType <- in_msg[msg_counter()]
+  contract$lastTradeDateOrContractMonth <- in_msg[msg_counter()]
+  contract$strike <- as.numeric(in_msg[msg_counter()])
+  contract$right <- in_msg[msg_counter()]
+
+  if (version >= 32) {
+    contract$multiplier <- in_msg[msg_counter()]
+  }
+
+  contract$exchange <- in_msg[msg_counter()]
+  contract$currency <- in_msg[msg_counter()]
+  contract$localSymbol <- in_msg[msg_counter()]
+
+  if (version >= 32) {
+    contract$tradingClass <- in_msg[msg_counter()]
+  }
+
+  # read order in_msg[msg_counter()]
+  order$action <- in_msg[msg_counter()]
+
+  if (ib_con$server_version >= .server_version$MIN_SERVER_VER_FRACTIONAL_POSITIONS){
+    order$totalQuantity <- as.numeric(in_msg[msg_counter()])
+  } else {
+    order$totalQuantity <- as.integer(in_msg[msg_counter()])
+  }
+
+  order$orderType = in_msg[msg_counter()]
+
+  if (version < 29) {
+    order$lmtPrice = as.numeric(in_msg[msg_counter()])
+  } else {
+    order$lmtPrice = decoder("numeric", in_msg[msg_counter()]) # show_unset
+  }
+  if (version < 30){
+    order$auxPrice = as.numeric(in_msg[msg_counter()])
+  } else {
+    order$auxPrice = decoder("numeric", in_msg[msg_counter()]) # show_unset
+  }
+
+  order$tif = in_msg[msg_counter()]
+  order$ocaGroup = in_msg[msg_counter()]
+  order$account = in_msg[msg_counter()]
+  order$openClose = in_msg[msg_counter()]
+
+  order$origin = as.integer(in_msg[msg_counter()])
+
+  order$orderRef = in_msg[msg_counter()]
+  order$clientId = as.integer(in_msg[msg_counter()])
+  order$permId = decoder("integer", in_msg[msg_counter()])
+
+  order$outsideRth = decoder("bool", in_msg[msg_counter()])
+  order$hidden = decoder("bool", in_msg[msg_counter()])
+  order$discretionaryAmt = decoder("numeric", in_msg[msg_counter()])
+  order$goodAfterTime = in_msg[msg_counter()]
+
+  sharesAllocation = in_msg[msg_counter()] # deprecated field
+
+  order$faGroup = in_msg[msg_counter()]
+  order$faMethod = in_msg[msg_counter()]
+  order$faPercentage = in_msg[msg_counter()]
+  order$faProfile = in_msg[msg_counter()]
+
+  if (ib_con$server_version >= .server_version$MIN_SERVER_VER_MODELS_SUPPORT) {
+    order$modelCode = in_msg[msg_counter()]
+  }
+
+  order$goodTillDate = in_msg[msg_counter()]
+
+  order$rule80A = in_msg[msg_counter()]
+  order$percentOffset = decoder("numeric", in_msg[msg_counter()]) # show_unset
+  order$settlingFirm = in_msg[msg_counter()]
+  order$shortSaleSlot = decoder("integer", in_msg[msg_counter()])
+  order$designatedLocation = in_msg[msg_counter()]
+
+  if (version >= 23) {
+    order$exemptCode = decoder("integer", in_msg[msg_counter()])
+  }
+
+  order$auctionStrategy = decoder("integer", in_msg[msg_counter()])
+  order$startingPrice = decoder("numeric", in_msg[msg_counter()]) # show_unset
+  order$stockRefPrice = decoder("numeric", in_msg[msg_counter()]) # SHOW_UNSET
+  order$delta = decoder("numeric", in_msg[msg_counter()]) # SHOW_UNSET
+  order$stockRangeLower = decoder("numeric", in_msg[msg_counter()]) # SHOW_UNSET
+  order$stockRangeUpper = decoder("numeric", in_msg[msg_counter()]) # SHOW_UNSET
+  order$displaySize = decoder("integer", in_msg[msg_counter()])
+
+  order$blockOrder = decoder("bool", in_msg[msg_counter()])
+  order$sweepToFill = decoder("bool", in_msg[msg_counter()])
+  order$allOrNone = decoder("bool", in_msg[msg_counter()])
+  order$minQty = decoder("integer", in_msg[msg_counter()]) # SHOW_UNSET
+  order$ocaType = decoder("integer", in_msg[msg_counter()])
+  order$eTradeOnly = decoder("bool", in_msg[msg_counter()])
+  order$firmQuoteOnly = decoder("bool", in_msg[msg_counter()])
+  order$nbboPriceCap = decoder("numeric", in_msg[msg_counter()]) # SHOW_UNSET
+
+  order$parentId = decoder("integer", in_msg[msg_counter()])
+  order$triggerMethod = decoder("integer", in_msg[msg_counter()])
+
+  order$volatility = decoder("numeric", in_msg[msg_counter()]) # SHOW_UNSET
+  order$volatilityType = decoder("integer", in_msg[msg_counter()])
+  order$deltaNeutralOrderType = in_msg[msg_counter()]
+  order$deltaNeutralAuxPrice = decoder("numeric", in_msg[msg_counter()]) # SHOW_UNSET
+
+  if (version >= 27 && nchar(order$deltaNeutralOrderType) > 0){
+    order$deltaNeutralConId = decoder("integer", in_msg[msg_counter()])
+    order$deltaNeutralSettlingFirm = in_msg[msg_counter()]
+    order$deltaNeutralClearingAccount = in_msg[msg_counter()]
+    order$deltaNeutralClearingIntent = in_msg[msg_counter()]
+  }
+
+  if (version >= 31 && nchar(order$deltaNeutralOrderType)){
+    order$deltaNeutralOpenClose = in_msg[msg_counter()]
+    order$deltaNeutralShortSale = decoder("bool", in_msg[msg_counter()])
+    order$deltaNeutralShortSaleSlot = decoder("integer", in_msg[msg_counter()])
+    order$deltaNeutralDesignatedLocation = in_msg[msg_counter()]
+  }
+
+  order$continuousUpdate = decoder("bool", in_msg[msg_counter()])
+
+  order$referencePriceType = decoder("integer", in_msg[msg_counter()])
+
+  order$trailStopPrice = decoder("numeric", in_msg[msg_counter()]) # SHOW_UNSET
+
+  if (version >= 30){
+    order$trailingPercent = decoder("numeric", in_msg[msg_counter()]) # SHOW_UNSET
+  }
+
+  order$basisPoints = decoder("numeric", in_msg[msg_counter()]) # SHOW_UNSET
+  order$basisPointsType = decoder("integer", in_msg[msg_counter()]) # SHOW_UNSET
+  contract$comboLegsDescrip = in_msg[msg_counter()]
+
+  # comboleg fields
+  if (version >= 29){
+    comboLegsCount = decoder("integer", in_msg[msg_counter()])
+
+      if (comboLegsCount > 0){
+        contract$comboLegs = list()
+        for (i in seq_len(comboLegsCount)){
+        comboLeg = ComboLeg()
+        comboLeg$conId = decoder("integer", in_msg[msg_counter()])
+        comboLeg$ratio = decoder("integer", in_msg[msg_counter()])
+        comboLeg$action = in_msg[msg_counter()]
+        comboLeg$exchange = in_msg[msg_counter()]
+        comboLeg$openClose = decoder("integer", in_msg[msg_counter()])
+        comboLeg$shortSaleSlot = decoder("integer", in_msg[msg_counter()])
+        comboLeg$designatedLocation = in_msg[msg_counter()]
+        comboLeg$exemptCode = decoder("integer", in_msg[msg_counter()])
+        contract$comboLegs[i] <- comboLeg
+        }
+      }
+
+
+      orderComboLegsCount = decoder("integer", in_msg[msg_counter()])
+      if (orderComboLegsCount > 0){
+        order$orderComboLegs = list()
+        for (i in seq_len(orderComboLegsCount)){
+          orderComboLeg = OrderComboLeg()
+          orderComboLeg$price = decoder("numeric", in_msg[msg_counter()]) # SHOW_UNSET
+          order$orderComboLegs[i] <- orderComboLeg
+        }
+      }
+  }
+  # end comboleg fields
+
+  if (version >= 26){
+    smartComboRoutingParamsCount = decoder("integer", in_msg[msg_counter()])
+    if (smartComboRoutingParamsCount > 0) {
+      order$smartComboRoutingParams = list()
+      for (i in seq_len(smartComboRoutingParamsCount)) {
+        tagValue = TagValue()
+        tagValue.tag = decode(str, in_msg[msg_counter()])
+        tagValue.value = decode(str, in_msg[msg_counter()])
+        order$smartComboRoutingParams[i] <- tagValue
+        }
+    }
+  }
+
+  if (version >= 20){
+    order$scaleInitLevelSize = decoder("integer", in_msg[msg_counter()]) # SHOW_UNSET
+    order$scaleSubsLevelSize = decoder("integer", in_msg[msg_counter()]) #  SHOW_UNSET
+    } else {# ver 15 fields
+    order$notSuppScaleNumComponents = decoder("integer", in_msg[msg_counter()]) # SHOW_UNSET
+    order$scaleInitLevelSize = decoder("integer", in_msg[msg_counter()]) # SHOW_UNSET # scaleComponectSize
+  }
+
+  order$scalePriceIncrement = decoder("numeric", in_msg[msg_counter()]) # SHOW_UNSET # ver 15 field
+
+  if (version >= 28 &&
+      !is.na(order$scalePriceIncrement) && # order$scalePriceIncrement != UNSET_DOUBLE
+      order$scalePriceIncrement > 0.0) {
+    order$scalePriceAdjustValue = decoder("numeric", in_msg[msg_counter()]) # SHOW_UNSET
+    order$scalePriceAdjustInterval = decoder("integer", in_msg[msg_counter()]) # SHOW_UNSET
+    order$scaleProfitOffset = decoder("numeric", in_msg[msg_counter()]) # SHOW_UNSET
+    order$scaleAutoReset = decoder("bool", in_msg[msg_counter()])
+    order$scaleInitPosition = decoder("integer", in_msg[msg_counter()]) # SHOW_UNSET
+    order$scaleInitFillQty = decoder("integer", in_msg[msg_counter()]) # SHOW_UNSET
+    order$scaleRandomPercent = decoder("bool", in_msg[msg_counter()])
+  }
+
+  if (version >= 24) {
+    order$hedgeType = in_msg[msg_counter()]
+    if (nchar(order$hedgeType) > 0) {
+      order$hedgeParam = in_msg[msg_counter()]
+    }
+  }
+
+
+  if (version >= 25){
+    order$optOutSmartRouting = decoder("bool", in_msg[msg_counter()])
+    }
+
+  order$clearingAccount = in_msg[msg_counter()]
+  order$clearingIntent = in_msg[msg_counter()]
+
+  if (version >= 22) {
+    order$notHeld = decoder("bool", in_msg[msg_counter()])
+  }
+
+
+  if (version >= 20){
+    deltaNeutralContractPresent = decoder("bool", in_msg[msg_counter()])
+    # needs to be TRUE
+    if (deltaNeutralContractPresent) {
+      contract$deltaNeutralContract = DeltaNeutralContract()
+      contract$deltaNeutralcontract$conId = decoder("integer", in_msg[msg_counter()])
+      contract$deltaNeutralcontract$delta = decoder("numeric", in_msg[msg_counter()])
+      contract$deltaNeutralcontract$price = decoder("numeric", in_msg[msg_counter()])
+    }
+  }
+
+  # algostrategy fields
+  if (version >= 21){
+    order$algoStrategy = in_msg[msg_counter()]
+    if (nchar(order$algoStrategy) > 0){
+      algoParamsCount = decoder("integer", in_msg[msg_counter()])
+      if (algoParamsCount > 0){
+        order$algoParams = list()
+        for (i in seq_len(algoParamsCount)){
+          tagValue = TagValue()
+          tagValue.tag = in_msg[msg_counter()]
+          tagValue.value = in_msg[msg_counter()]
+          order$algoParams[i] <- tagValue
+        }
+      }
+    }
+  }
+  # end algostrategy fields
+
+  if (version >= 33){
+    order$solicited = decoder("bool", in_msg[msg_counter()])
+  }
+
+  order$whatIf = decoder("bool", in_msg[msg_counter()])
+
+  #  OrderState fields
+  orderState = OrderState()
+
+  orderState.status = in_msg[msg_counter()] # ver 16 field
+  if (ib_con$server_version >= .server_version$MIN_SERVER_VER_WHAT_IF_EXT_FIELDS){
+    orderState.initMarginBefore = in_msg[msg_counter()]
+    orderState.maintMarginBefore = in_msg[msg_counter()]
+    orderState.equityWithLoanBefore = in_msg[msg_counter()]
+    orderState.initMarginChange = in_msg[msg_counter()]
+    orderState.maintMarginChange = in_msg[msg_counter()]
+    orderState.equityWithLoanChange = in_msg[msg_counter()]
+  }
+
+  orderState.initMarginAfter = in_msg[msg_counter()]
+  orderState.maintMarginAfter = in_msg[msg_counter()]
+  orderState.equityWithLoanAfter = in_msg[msg_counter()]
+
+  orderState.commission = decoder("numeric", in_msg[msg_counter()]) # SHOW_UNSET
+  orderState.minCommission = decode("numeric", in_msg[msg_counter()]) # SHOW_UNSET
+  orderState.maxCommission = decode("numeric", in_msg[msg_counter()]) # SHOW_UNSET
+  orderState.commissionCurrency = in_msg[msg_counter()]
+  orderState.warningText = in_msg[msg_counter()]
+  # end OrderState fields
+
+  if (version >= 34){
+    order$randomizeSize = decoder("bool", in_msg[msg_counter()])
+    order$randomizePrice = decoder("bool", in_msg[msg_counter()])
+  }
+
+  # pegged to benchmark fields
+  if (ib_con$server_version >= .server_version$MIN_SERVER_VER_PEGGED_TO_BENCHMARK){
+    if (order$orderType == "PEG BENCH") {
+      order$referenceContractId = decoder("integer", in_msg[msg_counter()])
+      order$isPeggedChangeAmountDecrease = decoder("bool", in_msg[msg_counter()])
+      order$peggedChangeAmount = decoder("numeric", in_msg[msg_counter()])
+      order$referenceChangeAmount = decoder("numeric", in_msg[msg_counter()])
+      order$referenceExchangeId = in_msg[msg_counter()]
+    }
+
+    # TODO: figure out OrderCondition
+    conditionsSize = decoder("integer", in_msg[msg_counter()])
+    if (conditionsSize > 0){
+      order$conditions = list()
+      for (i in seq_len(conditionsSize)){
+        conditionType = decoder("integer", in_msg[msg_counter()])
+        condition = order_condition.Create(conditionType)
+        condition.decode(in_msg[msg_counter()])
+        order$conditions[i] = condition
+      }
+    }
+
+    order$conditionsIgnoreRth = decoder("bool", in_msg[msg_counter()])
+    order$conditionsCancelOrder = decoder("bool", in_msg[msg_counter()])
+
+    order$adjustedOrderType = in_msg[msg_counter()]
+    order$triggerPrice = decoderr("numeric", in_msg[msg_counter()])
+    order$trailStopPrice = decoder("numeric", in_msg[msg_counter()])
+    order$lmtPriceOffset = decoder("numeric", in_msg[msg_counter()])
+    order$adjustedStopPrice = decoder("numeric", in_msg[msg_counter()])
+    order$adjustedStopLimitPrice = decoder("numeric", in_msg[msg_counter()])
+    order$adjustedTrailingAmount = decoder("numeric", in_msg[msg_counter()])
+    order$adjustableTrailingUnit = decoder("integer", in_msg[msg_counter()])
+  }
+  # end pegged to benchmark fields
+
+
+  if (ib_con$server_version >= .server_version$MIN_SERVER_VER_SOFT_DOLLAR_TIER){
+    name = in_msg[msg_counter()]
+    value = in_msg[msg_counter()]
+    displayName = in_msg[msg_counter()]
+    order$softDollarTier = SoftDollarTier(name, value, displayName)}
+
+  if (ib_con$server_version >= .server_version$MIN_SERVER_VER_CASH_QTY){
+    order$cashQty = decoder("numeric", in_msg[msg_counter()])}
+
+  if (ib_con$server_version >= .server_version$MIN_SERVER_VER_AUTO_PRICE_FOR_HEDGE){
+    order$dontUseAutoPriceForHedge = decoder("bool", in_msg[msg_counter()])}
+
+  if( ib_con$server_version >= .server_version$MIN_SERVER_VER_ORDER_CONTAINER){
+    order$isOmsContainer = decoder("bool", in_msg[msg_counter()])}
+
+  if (ib_con$server_version >= .server_version$MIN_SERVER_VER_D_PEG_ORDERS){
+    order$discretionaryUpToLimitPrice = decoder("bool", in_msg[msg_counter()])}
+
+  # TODO: call to openOrder object in ewrapper.
+  openOrder(order$orderId, contract, order, orderState)
+
+}
+
+
+
+
+
+
 
