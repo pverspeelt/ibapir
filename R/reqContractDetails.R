@@ -51,78 +51,26 @@ reqContractDetails <- function(contract, reqId = 1L, ib_con) {
 #' @keywords internal
 create_reqContractDetails_msg <- function(contract, reqId, ib_con) {
 
-  # stop the function or give a warning and a message that the values are set to ""?
-  if (ib_con$server_version < .server_version$MIN_SERVER_VER_SEC_ID_TYPE) {
-    if (nchar(contract$secIdType) != 0 || nchar(contract$secId) != 0) {
-      stop(glue("Current server version {ib_con$server_version} does not support secIdType and secId parameters."),
-           call. = FALSE)
-    }
-  }
-  if (ib_con$server_version < .server_version$MIN_SERVER_VER_TRADING_CLASS) {
-    if (nchar(contract$tradingClass) != 0) {
-      stop(glue("Current server version {ib_con$server_version} does not support tradingClass parameter in reqContractDetails."),
-           call. = FALSE)
-    }
-  }
-  if (ib_con$server_version < .server_version$MIN_SERVER_VER_LINKING) {
-    if (nchar(contract$primaryExchange) != 0) {
-      stop(glue("Current server version {ib_con$server_version} does not support primaryExchange parameter in reqContractDetails."),
-           call. = FALSE)
-    }
-  }
-
   VERSION = 8
 
   out_msg <- c(.outgoing_msg_id$REQ_CONTRACT_DATA,
-               make_field(VERSION))
-
-  if (ib_con$server_version >= .server_version$MIN_SERVER_VER_CONTRACT_DATA_CHAIN) {
-    out_msg <- c(out_msg,
-                 make_field(reqId))
-  }
-
-  out_msg <- c(out_msg,
-               make_field(contract$conId), # srv v37 and above
+               make_field(VERSION),
+               make_field(reqId),
+               make_field(contract$conId),
                make_field(contract$symbol),
                make_field(contract$secType),
                make_field(contract$lastTradeDateOrContractMonth),
                make_field(contract$strike),
                make_field(contract$right),
-               make_field(contract$multiplier)) # srv v15 and above
-
-  if (ib_con$server_version >= .server_version$MIN_SERVER_VER_PRIMARYEXCH) {
-    out_msg <- c(out_msg,
-                 make_field(contract$exchange),
-                 make_field(contract$primaryExchange))
-  } else if (ib_con$server_version >= .server_version$MIN_SERVER_VER_LINKING) {
-    if (nchar(contract$primaryExchange) != 0 &&
-        (contract$exchange == "BEST" || contract$exchange == "SMART")) {
-      out_msg <- c(out_msg,
-                   make_field(paste0(contract$exchange, ":",
-                                     contract$primaryExchange)))
-    } else {
-      out_msg <- c(out_msg,
-                   make_field(contract$exchange))
-    }
-  }
-
-  out_msg <- c(out_msg,
+               make_field(contract$multiplier),
+               make_field(contract$exchange),
+               make_field(contract$primaryExchange),
                make_field(contract$currency),
-               make_field(contract$localSymbol))
-
-  if (ib_con$server_version >= .server_version$MIN_SERVER_VER_TRADING_CLASS) {
-    out_msg <- c(out_msg,
-                 make_field(contract$tradingClass))
-  }
-
-  out_msg <- c(out_msg,
-               make_field(contract$includeExpired)) # srv v31 and above
-
-  if (ib_con$server_version >= .server_version$MIN_SERVER_VER_SEC_ID_TYPE) {
-    out_msg <- c(out_msg,
-                 make_field(contract$secIdType),
-                 make_field(contract$secId))
-  }
+               make_field(contract$localSymbol),
+               make_field(contract$tradingClass),
+               make_field(contract$includeExpired),
+               make_field(contract$secIdType),
+               make_field(contract$secId))
 }
 
 #' @keywords internal
