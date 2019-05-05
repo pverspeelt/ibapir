@@ -442,34 +442,34 @@ processOrderStatusMsg <- function(in_msg, msg_counter, ib_con) {
   status <- in_msg[msg_counter()]
 
   if (ib_con$server_version >= .server_version$MIN_SERVER_VER_FRACTIONAL_POSITIONS) {
-    filled <- as.numeric(in_msg[msg_counter])
+    filled <- as.numeric(in_msg[msg_counter()])
   } else {
-    filled <- as.integer(in_msg[msg_counter])
+    filled <- as.integer(in_msg[msg_counter()])
   }
 
   if (ib_con$server_version >= .server_version$MIN_SERVER_VER_FRACTIONAL_POSITIONS) {
-    remaining <- as.numeric(in_msg[msg_counter])
+    remaining <- as.numeric(in_msg[msg_counter()])
   } else {
-    remaining <- as.integer(in_msg[msg_counter])
+    remaining <- as.integer(in_msg[msg_counter()])
   }
 
-  avgFillPrice <- as.numeric(in_msg[msg_counter])
+  avgFillPrice <- as.numeric(in_msg[msg_counter()])
 
-  permId <- as.integer(in_msg[msg_counter])
-  parentId <- as.integer(in_msg[msg_counter])
-  lastFillPrice <- as.numeric(in_msg[msg_counter])
-  clientId <- as.integer(in_msg[msg_counter])
-  whyHeld <- as.integer(in_msg[msg_counter])
+  permId <- as.integer(in_msg[msg_counter()])
+  parentId <- as.integer(in_msg[msg_counter()])
+  lastFillPrice <- as.numeric(in_msg[msg_counter()])
+  clientId <- as.integer(in_msg[msg_counter()])
+  whyHeld <- in_msg[msg_counter()]
 
   if (ib_con$server_version >= .server_version$MIN_SERVER_VER_MARKET_CAP_PRICE) {
-    mktCapPrice <- as.numeric(in_msg[msg_counter])
+    mktCapPrice <- as.numeric(in_msg[msg_counter()])
   } else {
     mktCapPrice <- NULL
   }
 
   orderStatus(orderId, status, filled, remaining, avgFillPrice,
               permId, parentId, lastFillPrice, clientId, whyHeld,
-              mktCapPric)
+              mktCapPrice)
 }
 
 
@@ -477,7 +477,7 @@ orderStatus <- function(orderId, status, filled, remaining, avgFillPrice,
                         permId, parentId, lastFillPrice, clientId, whyHeld,
                         mktCapPrice) {
 
-  data.frame(orderId = OrderId,
+  data.frame(orderId = orderId,
              status = status,
              filled= filled,
              remaining = remaining,
