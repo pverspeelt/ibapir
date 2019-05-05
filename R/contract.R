@@ -216,7 +216,7 @@ ContractDetails <- function(contract = Contract(),
                             nextOptionPartial = FALSE,
                             notes = "") {
   structure(list(
-    Contract = contract,
+    contract = contract,
     marketName = marketName,
     minTick = minTick,
     orderTypes = orderTypes,
