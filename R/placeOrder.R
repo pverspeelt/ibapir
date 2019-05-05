@@ -467,7 +467,7 @@ processOrderStatusMsg <- function(in_msg, msg_counter, ib_con) {
     mktCapPrice <- NULL
   }
 
-  orderStatus(orderId, status, filled, remaining, avgFillPrice,
+  OrderStatus(orderId, status, filled, remaining, avgFillPrice,
               permId, parentId, lastFillPrice, clientId, whyHeld,
               mktCapPrice)
 }
@@ -679,8 +679,8 @@ processOpenOrderMsg <- function(in_msg, msg_counter, ib_con) {
       order$smartComboRoutingParams = list()
       for (i in seq_len(smartComboRoutingParamsCount)) {
         tagValue = TagValue()
-        tagValue.tag = decode(str, in_msg[msg_counter()])
-        tagValue.value = decode(str, in_msg[msg_counter()])
+        tagValue.tag = decoder(str, in_msg[msg_counter()])
+        tagValue.value = decoder(str, in_msg[msg_counter()])
         order$smartComboRoutingParams[i] <- tagValue
         }
     }
@@ -766,25 +766,25 @@ processOpenOrderMsg <- function(in_msg, msg_counter, ib_con) {
   #  OrderState fields
   orderState = OrderState()
 
-  orderState.status = in_msg[msg_counter()] # ver 16 field
+  orderState$status = in_msg[msg_counter()] # ver 16 field
   if (ib_con$server_version >= .server_version$MIN_SERVER_VER_WHAT_IF_EXT_FIELDS){
-    orderState.initMarginBefore = in_msg[msg_counter()]
-    orderState.maintMarginBefore = in_msg[msg_counter()]
-    orderState.equityWithLoanBefore = in_msg[msg_counter()]
-    orderState.initMarginChange = in_msg[msg_counter()]
-    orderState.maintMarginChange = in_msg[msg_counter()]
-    orderState.equityWithLoanChange = in_msg[msg_counter()]
+    orderState$initMarginBefore = in_msg[msg_counter()]
+    orderState$maintMarginBefore = in_msg[msg_counter()]
+    orderState$equityWithLoanBefore = in_msg[msg_counter()]
+    orderState$initMarginChange = in_msg[msg_counter()]
+    orderState$maintMarginChange = in_msg[msg_counter()]
+    orderState$equityWithLoanChange = in_msg[msg_counter()]
   }
 
-  orderState.initMarginAfter = in_msg[msg_counter()]
-  orderState.maintMarginAfter = in_msg[msg_counter()]
-  orderState.equityWithLoanAfter = in_msg[msg_counter()]
+  orderState$initMarginAfter = in_msg[msg_counter()]
+  orderState$maintMarginAfter = in_msg[msg_counter()]
+  orderState$equityWithLoanAfter = in_msg[msg_counter()]
 
-  orderState.commission = decoder("numeric", in_msg[msg_counter()]) # SHOW_UNSET
-  orderState.minCommission = decode("numeric", in_msg[msg_counter()]) # SHOW_UNSET
-  orderState.maxCommission = decode("numeric", in_msg[msg_counter()]) # SHOW_UNSET
-  orderState.commissionCurrency = in_msg[msg_counter()]
-  orderState.warningText = in_msg[msg_counter()]
+  orderState$commission = decoder("numeric", in_msg[msg_counter()]) # SHOW_UNSET
+  orderState$minCommission = decoder("numeric", in_msg[msg_counter()]) # SHOW_UNSET
+  orderState$maxCommission = decoder("numeric", in_msg[msg_counter()]) # SHOW_UNSET
+  orderState$commissionCurrency = in_msg[msg_counter()]
+  orderState$warningText = in_msg[msg_counter()]
   # end OrderState fields
 
   if (version >= 34){
@@ -812,13 +812,13 @@ processOpenOrderMsg <- function(in_msg, msg_counter, ib_con) {
         condition.decode(in_msg[msg_counter()])
         order$conditions[i] = condition
       }
+
+      order$conditionsIgnoreRth = decoder("bool", in_msg[msg_counter()])
+      order$conditionsCancelOrder = decoder("bool", in_msg[msg_counter()])
     }
 
-    order$conditionsIgnoreRth = decoder("bool", in_msg[msg_counter()])
-    order$conditionsCancelOrder = decoder("bool", in_msg[msg_counter()])
-
     order$adjustedOrderType = in_msg[msg_counter()]
-    order$triggerPrice = decoderr("numeric", in_msg[msg_counter()])
+    order$triggerPrice = decoder("numeric", in_msg[msg_counter()])
     order$trailStopPrice = decoder("numeric", in_msg[msg_counter()])
     order$lmtPriceOffset = decoder("numeric", in_msg[msg_counter()])
     order$adjustedStopPrice = decoder("numeric", in_msg[msg_counter()])
@@ -848,7 +848,7 @@ processOpenOrderMsg <- function(in_msg, msg_counter, ib_con) {
     order$discretionaryUpToLimitPrice = decoder("bool", in_msg[msg_counter()])}
 
   # TODO: call to openOrder object in ewrapper.
-  openOrder(order$orderId, contract, order, orderState)
+  # openOrder(order$orderId, contract, order, orderState)
 
 }
 
