@@ -192,9 +192,12 @@ Order = function(
       auxPrice  = auxPrice,
 
       # extended order fields
+      tif = tif,
       activeStartTime = activeStartTime,
       activeStopTime = activeStopTime,
+      ocaGroup = ocaGroup,
       ocaType    = ocaType,
+      orderRef = orderRef,
       transmit   = transmit,
       parentId   = parentId,
       blockOrder = blockOrder,
@@ -203,6 +206,9 @@ Order = function(
       triggerMethod  = triggerMethod,
       outsideRth = outsideRth,
       hidden     = hidden,
+      goodAfterTime = goodAfterTime,
+      goodTillDate = goodTillDate,
+      rule80A = rule80A,
       allOrNone  = allOrNone,
       minQty     = minQty,
       percentOffset  = percentOffset,
