@@ -21,6 +21,7 @@ placeOrder <- function(orderId, contract, order, ib_con){
 
   out_msg <- create_placeOrder_msg(orderId, contract, order, ib_con)
 
+
 }
 
 
@@ -90,6 +91,7 @@ create_placeOrder_msg <- function(orderId, contract, order, ib_con) {
                make_field(orderId),
                # contract fields
                make_field(contract$conId),
+               make_field(contract$symbol),
                make_field(contract$secType),
                make_field(contract$lastTradeDateOrContractMonth),
                make_field(contract$strike),
@@ -207,7 +209,6 @@ create_placeOrder_msg <- function(orderId, contract, order, ib_con) {
   }
 
   out_msg <- c(out_msg,
-               make_field(order$modelCode),
                make_field(order$shortSaleSlot), # 0 for retail, 1 or 2 for institutions
                make_field(order$designatedLocation),# populate only when shortSaleSlot = 2.
                make_field(order$exemptCode),
