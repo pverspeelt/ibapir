@@ -22,4 +22,20 @@ cancelOrder <- function(orderId, ib_con){
 
   send_message(out_msg, ib_con)
 
+  # receive messages
+  while (TRUE) {
+    if (socketSelect(list(ib_con$con), FALSE, 0.1)) {
+      in_msg <- parse_incoming_message(ib_con$con)
+      msgId <- in_msg[1]
+
+      # if (msgId == .incoming_msg_id$ORDER_STATUS) {
+      #   current_time <- ProcessMsg(in_msg, ib_con)
+      # } else
+        if (msgId == .incoming_msg_id$ERR_MSG) {
+          ProcessMsg(in_msg, ib_con)
+        }
+    } else
+      break
+  }
+
 }
