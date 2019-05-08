@@ -39,3 +39,38 @@ cancelOrder <- function(orderId, ib_con){
   }
 
 }
+
+
+#' Call this function to cancel all active orders.
+#'
+#' This method will cancel ALL open orders including those placed directly from TWS.
+#'
+#' @param ib_con A valid ib connection.
+#'
+#' @export
+#'
+#' @examples
+#' Example to follow
+
+reqGlobalCancel <- function(ib_con){
+
+  VERSION = 1
+
+  out_msg = c(make_field(.outgoing_msg_id$REQ_GLOBAL_CANCEL),
+              make_field(VERSION))
+
+  send_message(out_msg, ib_con)
+
+  # receive messages
+  while (TRUE) {
+    if (socketSelect(list(ib_con$con), FALSE, 0.1)) {
+      in_msg <- parse_incoming_message(ib_con$con)
+      msgId <- in_msg[1]
+
+      if (msgId == .incoming_msg_id$ERR_MSG) {
+        ProcessMsg(in_msg, ib_con)
+      }
+    } else
+      break
+  }
+}
