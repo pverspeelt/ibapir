@@ -1,4 +1,4 @@
-#' Title
+#' Request Open Orders
 #'
 #' Requests all open orders places by this specific API client
 #' (identified by the API client id). For client ID 0, this will bind

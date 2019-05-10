@@ -2,7 +2,7 @@
 % Please edit documentation in R/reqOpenOrders.R
 \name{reqOpenOrders}
 \alias{reqOpenOrders}
-\title{Title}
+\title{Request Open Orders}
 \usage{
 reqOpenOrders(ib_con)
 }
