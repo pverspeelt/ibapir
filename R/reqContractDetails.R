@@ -1,7 +1,7 @@
 #' Request contract details
 #'
 #' @param contract A valid contract. You can create a valid contract with the
-#' \code{\link{contract}} function or one of the contract helper functions.
+#' \code{\link{Contract}} function or one of the contract helper functions.
 #' @param reqId The request's unique identifier. Should be a scalar integer.
 #' @param ib_con A valid ib connection.
 #'
