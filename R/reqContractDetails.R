@@ -138,7 +138,7 @@ processContractDataMsg <- function(msg, msg_counter, ib_con) {
       tag <- NULL
       value <- NULL
       for (i in 1:secIdListCount){
-        tag[i] <- msg2[msg_counter()]
+        tag[i] <- msg[msg_counter()]
         value[i] <- msg[msg_counter()]
       }
       contract$secIdList <- list(tag = tag,
